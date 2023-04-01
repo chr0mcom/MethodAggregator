@@ -55,6 +55,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main' # only run job if on the main branch   
+    permissions:
+      packages: write
+      contents: read
+      
     
     steps:
       #Push NuGet package to GitHub packages
@@ -62,9 +66,9 @@ jobs:
         uses: actions/download-artifact@v2.1.1
         with:
           name: nugetPackage
-          
+
       - name: Prep packages
-        run: dotnet nuget add source --username chr0mcom --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/chr0mcom/index.json"
+        run: dotnet nuget add source --username ${{ github.repository_owner }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
       - name: Push package to GitHub packages
         if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change  
         run: dotnet nuget push *.nupkg --api-key ${{ secrets.GITHUB_TOKEN }}  --source "github"
