@@ -57,7 +57,7 @@ jobs:
     if: github.ref == 'refs/heads/main' # only run job if on the main branch   
     permissions:
       packages: write
-      contents: read
+      contents: write
       
     
     steps:
