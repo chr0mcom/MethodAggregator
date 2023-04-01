@@ -63,14 +63,12 @@ jobs:
         with:
           name: nugetPackage
           
-      - name: list all files
-        run: ls -Rla
       - name: Prep packages
         run: dotnet nuget add source --username chr0mcom --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/chr0mcom/index.json"
-#      - name: Push package to GitHub packages
-#        if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change  
-#        run: dotnet nuget push nugetPackage/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }}  --source "github"
-#      
+      - name: Push package to GitHub packages
+        if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change  
+        run: dotnet nuget push *.nupkg --api-key ${{ secrets.GITHUB_TOKEN }}  --source "github"
+
       #Create release
       - name: Create Release
         if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change
