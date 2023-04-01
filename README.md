@@ -3,6 +3,8 @@
 MethodAggregator is a C# library that allows you to manage, register, and execute methods dynamically. It provides functionality to find and execute the most suitable method based on the provided parameters and return type.
 
 ## Usage
+
+How to use the Execute method:
 ```csharp
 using MethodAggregator;
 
@@ -33,6 +35,30 @@ public class Program
     public static double Add(double a, double b)
     {
         return a + b;
+    }
+}
+```
+
+How to use the SimpleExecute method:
+```csharp
+using MethodAggregator;
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        IMethodAggregator aggregator = new MethodAggregator();
+
+        // Register methods
+        aggregator.Register((int x, int y) => x + y, "Add");
+        aggregator.Register((int x, int y) => x * y, "Multiply");
+
+        // Examples for SimpleExecute
+        int sumResult = aggregator.SimpleExecute<int>(10, 20); // Invokes the Add method
+        int multiplyResult = aggregator.SimpleExecute<int>(10, 5); // Invokes the Multiply method
+
+        Console.WriteLine($"Sum: {sumResult}");
+        Console.WriteLine($"Multiplication: {multiplyResult}");
     }
 }
 ```
