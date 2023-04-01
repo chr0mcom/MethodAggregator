@@ -10,11 +10,12 @@ using JetBrains.Annotations;
 
 namespace MethodAggregator
 {
+	/// <inheritdoc />
 	public class MethodAggregator : IMethodAggregator
 	{
 		[NotNull] private readonly Dictionary<Delegate, string> _registeredMethods = new Dictionary<Delegate, string>();
 
-		
+		/// <inheritdoc />
 		public T Execute<T>(string name, [NotNull] params object[] parameters)
 		{
 			Delegate del = FindDelegate(name, typeof(T), parameters);
@@ -35,6 +36,7 @@ namespace MethodAggregator
 			}
 		}
 
+		/// <inheritdoc />
 		public void Execute(string name, [NotNull] params object[] parameters)
 		{
 			if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -43,16 +45,20 @@ namespace MethodAggregator
 			del.DynamicInvoke(parameters);
 		}
 
+		/// <inheritdoc />
 		public T SimpleExecute<T>([NotNull] params object[] parameters) => Execute<T>(null, parameters);
 
+		/// <inheritdoc />
 		public void SimpleExecute([NotNull] params object[] parameters) => Execute(null, parameters);
 
+		/// <inheritdoc />
 		public bool TryExecute<T>(out T returnValue, string name, [NotNull] params object[] parameters)
 		{
 			returnValue = Execute<T>(name, parameters);
 			return !(returnValue == null || returnValue.Equals(default(T)));
 		}
 
+		/// <inheritdoc />
 		public bool TryExecute(string name, [NotNull] params object[] parameters)
 		{
 			try
@@ -65,24 +71,28 @@ namespace MethodAggregator
 			}
 		}
 
+		/// <inheritdoc />
 		public bool IsRegistered(Delegate del)
 		{
 			if (del == null) throw new ArgumentNullException(nameof(del));
 			return _registeredMethods.ContainsKey(del);
 		}
-		
+
+		/// <inheritdoc />
 		public bool IsRegistered(string name)
 		{
 			if (name == null) throw new ArgumentNullException(nameof(name));
 			return _registeredMethods.ContainsValue(name);
 		}
 
+		/// <inheritdoc />
 		public void Register(Delegate del, string name = null)
 		{
 			if (del == null) throw new ArgumentNullException(nameof(del));
 			_registeredMethods.Add(del, name ?? del.Method.Name);
 		}
 
+		/// <inheritdoc />
 		public void Unregister(Delegate del)
 		{
 			if (del == null) throw new ArgumentNullException(nameof(del));
