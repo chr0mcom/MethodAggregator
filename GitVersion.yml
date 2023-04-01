@@ -1,1 +1,13 @@
-next-version: 1.0.0
+next-version: 1.0
+branches:
+  release:
+    regex: release?[/-]
+    tag: rc
+  pull-request:
+    mode: ContinuousDeployment
+    regex: ((pull|pull\-requests|pr)[/-]|[/-](merge))
+    tag: pr
+    tag-number-pattern: '[/-]?(?<number>\d+)'
+    prevent-increment-of-merged-branch-version: false
+ignore:
+  sha: []
