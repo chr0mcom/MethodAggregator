@@ -39,6 +39,10 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
+      - name: Restore dependencies
+        run: dotnet restore MethodAggregator/MethodAggregator.csproj
+      - name: Build
+        run: dotnet build MethodAggregator/MethodAggregator.csproj -c Release -p:Version='${{ steps.gitversion.outputs.SemVer }}'
       - name: Build and Pack NuGet package
         run: dotnet pack MethodAggregator/MethodAggregator.csproj -p:Version='${{ steps.gitversion.outputs.SemVer }}' -c Release
       - name: Upload NuGet package to GitHub
