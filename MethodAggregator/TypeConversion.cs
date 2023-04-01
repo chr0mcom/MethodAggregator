@@ -157,8 +157,10 @@ namespace MethodAggregator
 			if (rootType == null) throw new ArgumentNullException(nameof(rootType));
 			List<Type> types = GetAllImplementedTypes(rootType);
 			foreach (Type type in types.ToList())
-				if (type != null)
-					types.RemoveAll(i => GetAllImplementedTypes(type).Contains(i));
+			{
+				if (type != null) types.RemoveAll(i => GetAllImplementedTypes(type).Contains(i));
+			}
+
 			return types;
 		}
 
