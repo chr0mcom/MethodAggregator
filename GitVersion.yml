@@ -1,13 +1,26 @@
 next-version: 1.0
+mode: Mainline
+legacy-semver-padding: 0
+build-metadata-padding: 0
+commits-since-version-source-padding: 0
+assembly-versioning-scheme: MajorMinorPatch
+assembly-file-versioning-scheme: MajorMinorPatchTag
+assembly-informational-format: '{LegacySemVer}'
 branches:
+  main:
+    regex: main
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    tag: ''
+    track-merge-target: false
+    tracks-release-branches: false
+    is-release-branch: false
   release:
-    regex: release?[/-]
-    tag: rc
-  pull-request:
-    mode: ContinuousDeployment
-    regex: ((pull|pull\-requests|pr)[/-]|[/-](merge))
-    tag: pr
-    tag-number-pattern: '[/-]?(?<number>\d+)'
-    prevent-increment-of-merged-branch-version: false
-ignore:
-  sha: []
+    regex: release
+    source-branches: ['main']
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    tag: beta
+    track-merge-target: false
+    tracks-release-branches: false
+    is-release-branch:  true
