@@ -15,5 +15,9 @@ public class MethodAggregatorTestBase : IDisposable
 	protected MethodAggregatorTestBase() { MethodAggregator = new MethodAggregator(); }
 
 	/// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-	public void Dispose() { MethodAggregator.Dispose(); }
+	public void Dispose()
+	{
+		MethodAggregator.Dispose();
+		GC.SuppressFinalize(this);
+	}
 }
