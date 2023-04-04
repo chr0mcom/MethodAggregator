@@ -13,36 +13,39 @@ namespace MethodAggregator;
 /// <inheritdoc />
 public class MethodAggregator : IMethodAggregator
 {
-	[NotNull] private readonly Dictionary<Delegate, string> _registeredMethods = new Dictionary<Delegate, string>();
+	[NotNull] private readonly ThreadingDictionary<Delegate, string> _registeredMethods = new Dictionary<Delegate, string>();
 
-	/// <inheritdoc />
-	public T Execute<T>(string name, [NotNull] params object[] parameters)
-	{
-		Delegate del = FindDelegate(name, typeof(T), parameters);
-		if (del == null) throw new InvalidOperationException("No method found for given parameters.");
-		object invokedValue = del.DynamicInvoke(parameters);
-		try
+		/// <inheritdoc />
+		public T Execute<T>(string name, [NotNull] params object[] parameters)
 		{
-			return (T) invokedValue;
-		} catch
-		{
+			Delegate del = FindDelegate(name, typeof(T), parameters);
+			if (del == null) throw new InvalidOperationException("No method found for given parameters.");
+            object lockObject = _registeredMethods.GetValue(del).lockObject ?? throw new ArgumentNullException(nameof(lockObject));
+            object invokedValue;
+            lock(lockObject) invokedValue = del.DynamicInvoke(parameters);
 			try
 			{
-				return (T) Convert.ChangeType(invokedValue, typeof(T));
+				return (T) invokedValue;
 			} catch
 			{
-				return default;
+				try
+				{
+					return (T) Convert.ChangeType(invokedValue, typeof(T));
+				} catch
+				{
+					return default;
+				}
 			}
 		}
-	}
 
-	/// <inheritdoc />
-	public void Execute(string name, [NotNull] params object[] parameters)
-	{
-		Delegate del = FindDelegate(name, typeof(void), parameters);
-		if (del == null) throw new InvalidOperationException("No method found for given parameters.");
-		del.DynamicInvoke(parameters);
-	}
+		/// <inheritdoc />
+		public void Execute(string name, [NotNull] params object[] parameters)
+		{
+			if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+			Delegate del = FindDelegate(name, typeof(void), parameters);
+			if (del == null) throw new InvalidOperationException("No method found for given parameters.");
+			del.DynamicInvoke(parameters);
+		}
 
 	/// <inheritdoc />
 	public T SimpleExecute<T>([NotNull] params object[] parameters) => Execute<T>(null, parameters);
@@ -77,26 +80,26 @@ public class MethodAggregator : IMethodAggregator
 		return _registeredMethods.ContainsKey(del);
 	}
 
-	/// <inheritdoc />
-	public bool IsRegistered(string name)
-	{
-		if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
-		return _registeredMethods.ContainsValue(name);
-	}
+		/// <inheritdoc />
+		public bool IsRegistered(string name)
+		{
+			if (name == null) throw new ArgumentNullException(nameof(name));
+			return _registeredMethods.Any(d => d.Value.name == name);
+		}
 
-	/// <inheritdoc />
-	public void Register(Delegate del, string name = null)
-	{
-		if (del == null) throw new ArgumentNullException(nameof(del));
-		_registeredMethods.Add(del, name ?? del.Method.Name);
-	}
+		/// <inheritdoc />
+		public void Register(Delegate del, string name = null)
+		{
+			if (del == null) throw new ArgumentNullException(nameof(del));
+			_registeredMethods.Add(del, (name ?? del.Method.Name, new object()));
+		}
 
-	/// <inheritdoc />
-	public void Unregister(Delegate del)
-	{
-		if (del == null) throw new ArgumentNullException(nameof(del));
-		_registeredMethods.Remove(del);
-	}
+		/// <inheritdoc />
+		public void Unregister(Delegate del)
+		{
+			if (del == null) throw new ArgumentNullException(nameof(del));
+			_registeredMethods.RemoveKey(del);
+		}
 
 	/// <inheritdoc />
 	public void Unregister(string name)
@@ -167,5 +170,6 @@ public class MethodAggregator : IMethodAggregator
 		return FilterParameterBestTypeMatches(filterParameterTypesAreAssignable, returnType, parameterTypes);
 	}
 
-	private IEnumerable<Delegate> GetMethods(string name = null) => name == null ? _registeredMethods.Keys : _registeredMethods.Where(p => p.Value == name).Select(p => p.Key);
+		private IEnumerable<Delegate> GetMethods(string name = null) => name == null ? _registeredMethods.Keys : _registeredMethods.Where(p => p.Value.name == name).Select(p => p.Key);
+	}
 }
