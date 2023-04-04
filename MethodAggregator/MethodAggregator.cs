@@ -13,14 +13,16 @@ namespace MethodAggregator
 	/// <inheritdoc />
 	public class MethodAggregator : IMethodAggregator
 	{
-		[NotNull] private readonly Dictionary<Delegate, string> _registeredMethods = new Dictionary<Delegate, string>();
+		[NotNull] private readonly ThreadingDictionary<Delegate, (string name, object lockObject)> _registeredMethods = new ThreadingDictionary<Delegate, (string, object)>();
 
 		/// <inheritdoc />
 		public T Execute<T>(string name, [NotNull] params object[] parameters)
 		{
 			Delegate del = FindDelegate(name, typeof(T), parameters);
 			if (del == null) throw new InvalidOperationException("No method found for given parameters.");
-			object invokedValue = del.DynamicInvoke(parameters);
+            object lockObject = _registeredMethods.GetValue(del).lockObject ?? throw new ArgumentNullException(nameof(lockObject));
+            object invokedValue;
+            lock(lockObject) invokedValue = del.DynamicInvoke(parameters);
 			try
 			{
 				return (T) invokedValue;
@@ -41,8 +43,9 @@ namespace MethodAggregator
 		{
 			if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 			Delegate del = FindDelegate(name, typeof(void), parameters);
-			if (del == null) throw new InvalidOperationException("No method found for given parameters.");
-			del.DynamicInvoke(parameters);
+            if (del == null) throw new InvalidOperationException("No method found for given parameters.");
+            object lockObject = _registeredMethods.GetValue(del).lockObject ?? throw new ArgumentNullException(nameof(lockObject));
+            lock(lockObject) del.DynamicInvoke(parameters);
 		}
 
 		/// <inheritdoc />
@@ -82,21 +85,21 @@ namespace MethodAggregator
 		public bool IsRegistered(string name)
 		{
 			if (name == null) throw new ArgumentNullException(nameof(name));
-			return _registeredMethods.ContainsValue(name);
+			return _registeredMethods.Any(d => d.Value.name == name);
 		}
 
 		/// <inheritdoc />
 		public void Register(Delegate del, string name = null)
 		{
 			if (del == null) throw new ArgumentNullException(nameof(del));
-			_registeredMethods.Add(del, name ?? del.Method.Name);
+			_registeredMethods.Add(del, (name ?? del.Method.Name, new object()));
 		}
 
 		/// <inheritdoc />
 		public void Unregister(Delegate del)
 		{
 			if (del == null) throw new ArgumentNullException(nameof(del));
-			_registeredMethods.Remove(del);
+			_registeredMethods.RemoveKey(del);
 		}
 
 		/// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
@@ -156,6 +159,6 @@ namespace MethodAggregator
 			return FilterParameterBestTypeMatches(filterParameterTypesAreAssignable, returnType, parameterTypes);
 		}
 
-		private IEnumerable<Delegate> GetMethods(string name = null) => name == null ? _registeredMethods.Keys : _registeredMethods.Where(p => p.Value == name).Select(p => p.Key);
+		private IEnumerable<Delegate> GetMethods(string name = null) => name == null ? _registeredMethods.Keys : _registeredMethods.Where(p => p.Value.name == name).Select(p => p.Key);
 	}
 }
