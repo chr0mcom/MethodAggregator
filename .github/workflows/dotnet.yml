@@ -43,6 +43,8 @@ jobs:
         run: dotnet restore MethodAggregator/MethodAggregator.csproj
       - name: Build
         run: dotnet build MethodAggregator/MethodAggregator.csproj -c Release -p:Version='${{ steps.gitversion.outputs.SemVer }}'
+      - name: Test
+        run: dotnet test MethodAggregator.Tests/MethodAggregator.Tests.csproj --no-build --verbosity normal
       - name: Build and Pack NuGet package
         run: dotnet pack MethodAggregator/MethodAggregator.csproj -p:Version='${{ steps.gitversion.outputs.SemVer }}' -c Release
       - name: Upload NuGet package to GitHub
