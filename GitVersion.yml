@@ -1,26 +1,29 @@
-next-version: 1.0.3
-mode: Mainline
-legacy-semver-padding: 0
-build-metadata-padding: 0
-commits-since-version-source-padding: 0
 assembly-versioning-scheme: MajorMinorPatch
 assembly-file-versioning-scheme: MajorMinorPatchTag
 assembly-informational-format: '{LegacySemVer}'
+mode: ContinuousDeployment
+legacy-semver-padding: 0
+build-metadata-padding: 0
+commits-since-version-source-padding: 0
 branches:
   main:
-    regex: main
+    tag: ''
     increment: Patch
     prevent-increment-of-merged-branch-version: true
-    tag: ''
     track-merge-target: false
+    regex: main
     tracks-release-branches: false
     is-release-branch: false
   release:
-    regex: release
-    source-branches: ['main']
+    tag: beta
     increment: Patch
     prevent-increment-of-merged-branch-version: true
-    tag: beta
     track-merge-target: false
+    regex: release
+    source-branches:
+    - main
     tracks-release-branches: false
-    is-release-branch:  true
+    is-release-branch: true
+ignore:
+  sha: []
+merge-message-formats: {}

@@ -12,7 +12,7 @@ namespace MethodAggregator.Tests;
 
 public class MethodAggregationUnitTests : MethodAggregatorTestBase
 {
-	public MethodAggregationUnitTests(ITestOutputHelper output)
+	public MethodAggregationUnitTests([NotNull] ITestOutputHelper output)
 	{
 		_output = output;
 		MethodAggregator = new MethodAggregator();
@@ -20,7 +20,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 
 	[NotNull] private readonly ITestOutputHelper _output;
 
-	[Fact] public void Execute_ExecuteRegisteredMethod_MethodIsExecuted()
+	[Fact]
+	public void Execute_ExecuteRegisteredMethod_MethodIsExecuted()
 	{
 		#region Arrange
 
@@ -42,7 +43,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void Execute_ExecuteRegisteredMethodWithParameters_MethodIsExecuted()
+	[Fact]
+	public void Execute_ExecuteRegisteredMethodWithParameters_MethodIsExecuted()
 	{
 		#region Arrange
 
@@ -64,7 +66,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void Execute_ExecuteRegisteredMethodWithParametersAndConvertType_MethodIsExecuted()
+	[Fact]
+	public void Execute_ExecuteRegisteredMethodWithParametersAndConvertType_MethodIsExecuted()
 	{
 		#region Arrange
 
@@ -86,7 +89,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void Register_RegisterMethod_MethodIsRegistered()
+	[Fact]
+	public void Register_RegisterMethod_MethodIsRegistered()
 	{
 		#region Arrange
 
@@ -107,7 +111,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void Register_RegisterMethodTwice_ThrowsException()
+	[Fact]
+	public void Register_RegisterMethodTwice_ThrowsException()
 	{
 		#region Arrange
 
@@ -128,7 +133,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void Register_RegisterMethodWithDifferentName_MethodIsRegistered()
+	[Fact]
+	public void Register_RegisterMethodWithDifferentName_MethodIsRegistered()
 	{
 		#region Arrange
 
@@ -150,7 +156,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void Register_RegisterMethodWithDifferentNameAndMethodTwice_ThrowsException()
+	[Fact]
+	public void Register_RegisterMethodWithDifferentNameAndMethodTwice_ThrowsException()
 	{
 		#region Arrange
 
@@ -171,7 +178,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void Register_RegisterMethodWithDifferentNameTwice_ThrowsException()
+	[Fact]
+	public void Register_RegisterMethodWithDifferentNameTwice_ThrowsException()
 	{
 		#region Arrange
 
@@ -192,7 +200,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void SimpleExecute_ExecuteOnlyRegisteredMethod_MethodIsExecuted()
+	[Fact]
+	public void SimpleExecute_ExecuteOnlyRegisteredMethod_MethodIsExecuted()
 	{
 		#region Arrange
 
@@ -224,7 +233,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void SimpleExecute_ExecuteOnlyRegisteredMethodWithParameters_MethodIsExecuted()
+	[Fact]
+	public void SimpleExecute_ExecuteOnlyRegisteredMethodWithParameters_MethodIsExecuted()
 	{
 		#region Arrange
 
@@ -254,7 +264,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void TryExecute_TryExecuteOnNonRegisteredMethod_FalseIsReturned()
+	[Fact]
+	public void TryExecute_TryExecuteOnNonRegisteredMethod_FalseIsReturned()
 	{
 		#region Act
 
@@ -269,7 +280,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void TryExecute_TryExecuteOnRegisteredMethod_MethodIsCalled()
+	[Fact]
+	public void TryExecute_TryExecuteOnRegisteredMethod_MethodIsCalled()
 	{
 		#region Arrange
 
@@ -291,7 +303,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void TryExecute_TryExecuteOnRegisteredVoidMethod_MethodIsCalled()
+	[Fact]
+	public void TryExecute_TryExecuteOnRegisteredVoidMethod_MethodIsCalled()
 	{
 		#region Arrange
 
@@ -314,7 +327,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
-	[Fact] public void Unregister_RegisterAndUnregisterMethod_MethodIsUnregistered()
+	[Fact]
+	public void Unregister_RegisterAndUnregisterMethod_MethodIsUnregistered()
 	{
 		#region Arrange
 
@@ -335,5 +349,77 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		MethodAggregator.IsRegistered(nameof(MethodToExecute)).ShouldBe(false);
 
 		#endregion Assert
+	}
+	
+	[Fact]
+	public void Unregister_RegisterAndUnregisterMethodByName_MethodIsUnregistered()
+	{
+		#region Arrange
+
+		void MethodToExecute() => Console.WriteLine(2);
+		MethodAggregator.Register(MethodToExecute, nameof(MethodToExecute));
+
+		#endregion Arrange
+
+		#region Act
+
+		MethodAggregator.Unregister(nameof(MethodToExecute));
+
+		#endregion Act
+
+		#region Assert
+
+		MethodAggregator.IsRegistered(MethodToExecute).ShouldBe(false);
+		MethodAggregator.IsRegistered(nameof(MethodToExecute)).ShouldBe(false);
+
+		#endregion Assert
+	}
+	
+	[Fact]
+	public void IsRegistered_CalledWithNullName_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<ArgumentNullException>(() => MethodAggregator.IsRegistered((string)null)).Message.ShouldBe("Value cannot be null. (Parameter 'name')");
+	}
+	
+	[Fact]
+	public void IsRegistered_CalledWithNullDelegate_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<ArgumentNullException>(() => MethodAggregator.IsRegistered((Delegate)null)).Message.ShouldBe("Value cannot be null. (Parameter 'del')");
+	}
+	
+	[Fact]
+	public void Register_CalledWithNullDelegate_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<ArgumentNullException>(() => MethodAggregator.Register(null)).Message.ShouldBe("Value cannot be null. (Parameter 'del')");
+	}
+	
+	[Fact]
+	public void Unregister_CalledWithNullDelegate_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<ArgumentNullException>(() => MethodAggregator.Unregister((Delegate)null)).Message.ShouldBe("Value cannot be null. (Parameter 'del')");
+	}
+	[Fact]
+	public void Unregister_CalledWithNullName_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<ArgumentNullException>(() => MethodAggregator.Unregister((string)null)).Message.ShouldBe("Value cannot be null. (Parameter 'name')");
+	}
+	
+	[Fact]
+	public void Unregister_CalledWithNonRegisteredName_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<InvalidOperationException>(() => MethodAggregator.Unregister("NotRegistered")).Message.ShouldBe("No method found with given name: 'NotRegistered'.");
+	}
+	
+	[Fact]
+	public void Execute_CalledWithNonRegisteredName_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<InvalidOperationException>(() => MethodAggregator.Execute<int>("NotRegistered")).Message.ShouldBe("No method found for given parameters.");
 	}
 }
