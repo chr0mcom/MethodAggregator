@@ -9,13 +9,13 @@ using JetBrains.Annotations;
 
 #endregion
 
-[assembly:InternalsVisibleTo("MethodAggregator.Tests")]
+[assembly: InternalsVisibleTo("MethodAggregator.Tests")]
 
 namespace MethodAggregator;
 
 internal class TypeConversion
 {
-	[NotNull] private static readonly ConcurrentDictionary<Type, TypeNode> TypeNodeDictionary = new ();
+	[NotNull] private static readonly ConcurrentDictionary<Type, TypeNode> TypeNodeDictionary = new();
 
 	public static Type GetBestNativeTypeMatch([NotNull] Type inputType, [NotNull] List<Type> checkTypes)
 	{
@@ -79,7 +79,7 @@ internal class TypeConversion
 	[NotNull]
 	private static TypeNode BuildTypeTree(Type type)
 	{
-		TypeNode root = new TypeNode {Type = type, Level = 0};
+		TypeNode root = new() {Type = type, Level = 0};
 		BuildTypeTreeRecursively(root);
 		return root;
 	}
@@ -92,7 +92,7 @@ internal class TypeConversion
 		int level = node.Level + 1;
 		foreach (Type type in types)
 		{
-			TypeNode childNode = new TypeNode {Type = type, Level = level, Parent = node};
+			TypeNode childNode = new() {Type = type, Level = level, Parent = node};
 			node.Children?.Add(childNode);
 			BuildTypeTreeRecursively(childNode);
 		}
@@ -102,7 +102,7 @@ internal class TypeConversion
 	private static List<Type> GetAllBaseTypes([NotNull] Type type)
 	{
 		if (type == null) throw new ArgumentNullException(nameof(type));
-		List<Type> retList = new List<Type>();
+		List<Type> retList = new();
 		if (type.BaseType == null || type.BaseType == typeof(object)) return retList;
 		retList.Add(type.BaseType);
 		retList.AddRange(GetAllBaseTypes(type.BaseType));
@@ -113,7 +113,7 @@ internal class TypeConversion
 	private static List<Type> GetAllImplementedTypes([NotNull] Type type)
 	{
 		if (type == null) throw new ArgumentNullException(nameof(type));
-		HashSet<Type> hashSet = new HashSet<Type>();
+		HashSet<Type> hashSet = new();
 		foreach (Type baseType in GetAllBaseTypes(type)) hashSet.Add(baseType);
 		foreach (Type interfaceType in type.GetInterfaces()) hashSet.Add(interfaceType);
 		return hashSet.ToList();
@@ -148,7 +148,7 @@ internal class TypeConversion
 	{
 		if (typeNode == null) throw new ArgumentNullException(nameof(typeNode));
 		if (methodTypes == null) throw new ArgumentNullException(nameof(methodTypes));
-		List<(Type methodType, TypeNode assignableType)> result = new List<(Type methodType, TypeNode assignableType)>();
+		List<(Type methodType, TypeNode assignableType)> result = new();
 		foreach (Type methodType in methodTypes)
 		{
 			TypeNode assignableType = GetAssignableType(typeNode, methodType);
@@ -164,8 +164,10 @@ internal class TypeConversion
 		if (rootType == null) throw new ArgumentNullException(nameof(rootType));
 		List<Type> types = GetAllImplementedTypes(rootType);
 		foreach (Type type in types.ToList())
-			if (type != null)
-				types.RemoveAll(i => GetAllImplementedTypes(type).Contains(i));
+		{
+			if (type != null) types.RemoveAll(i => GetAllImplementedTypes(type).Contains(i));
+		}
+
 		return types;
 	}
 
@@ -503,7 +505,7 @@ internal class TypeConversion
 	private class TypeNode
 	{
 		public Type Type { get; set; }
-		public List<TypeNode> Children { get; } = new List<TypeNode>();
+		public List<TypeNode> Children { get; } = new();
 		public int Level { get; set; }
 		public TypeNode Parent { get; set; }
 		public int Order => Parent != null ? (Parent.Children?.IndexOf(this) ?? 0) + 1 : 0;

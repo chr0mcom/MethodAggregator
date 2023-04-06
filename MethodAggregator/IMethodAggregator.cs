@@ -103,9 +103,9 @@ public interface IMethodAggregator : IDisposable
 	void Unregister([NotNull] Delegate del);
 
 	/// <summary>
-	///    Unregisters a method by name.
+	///     Unregisters a method by name.
 	/// </summary>
-	/// <seealso cref="Unregister(System.Delegate)"/>
+	/// <seealso cref="Unregister(System.Delegate)" />
 	/// <param name="name"></param>
 	void Unregister([NotNull] string name);
 }

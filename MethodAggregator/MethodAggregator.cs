@@ -14,6 +14,14 @@ namespace MethodAggregator;
 public class MethodAggregator : IMethodAggregator
 {
 	[NotNull] private readonly ThreadingDictionary<Delegate, (string name, object lockObject)> _registeredMethods = new();
+	private readonly RegisteringBehaviour _registeringBehaviour;
+
+	/// <summary>
+	///    Instantiates a new <see cref="MethodAggregator" />.
+	/// </summary>
+	/// <param name="registeringBehaviour">defines the convention for registering methods.</param>
+	/// <seealso cref="RegisteringBehaviour"/>
+	public MethodAggregator(RegisteringBehaviour registeringBehaviour = RegisteringBehaviour.MethodName) { _registeringBehaviour = registeringBehaviour; }
 
 	/// <inheritdoc />
 	public T Execute<T>(string name, [NotNull] params object[] parameters)
@@ -91,7 +99,13 @@ public class MethodAggregator : IMethodAggregator
 	public void Register(Delegate del, string name = null)
 	{
 		if (del == null) throw new ArgumentNullException(nameof(del));
-		_registeredMethods.Add(del, (name ?? del.Method.Name, new object()));
+		name ??= _registeringBehaviour switch
+		{
+				RegisteringBehaviour.MethodName => del.Method.Name,
+				RegisteringBehaviour.ClassAndMethodName => $"{del.Method.DeclaringType?.Name}.{del.Method.Name}",
+				_ => throw new ArgumentOutOfRangeException()
+		};
+		_registeredMethods.Add(del, (name, new object()));
 	}
 
 	/// <inheritdoc />
@@ -110,7 +124,9 @@ public class MethodAggregator : IMethodAggregator
 		Unregister(del);
 	}
 
-	/// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+	/// <summary>
+	///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+	/// </summary>
 	public void Dispose()
 	{
 		_registeredMethods.Clear();
@@ -149,7 +165,7 @@ public class MethodAggregator : IMethodAggregator
 		if (delegates == null) throw new ArgumentNullException(nameof(delegates));
 		if (returnType == null) throw new ArgumentNullException(nameof(returnType));
 		if (parameterTypes == null) throw new ArgumentNullException(nameof(parameterTypes));
-		List<Delegate> filteredList = new List<Delegate>();
+		List<Delegate> filteredList = new();
 		foreach (Delegate del in delegates)
 		{
 			if (del == null) continue;
