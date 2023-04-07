@@ -1,5 +1,17 @@
 # MethodAggregator
 
+<p align="center">
+    <a href="https://www.nuget.org/packages/MethodAggregator" alt="Downloads">
+        <img src="https://img.shields.io/nuget/dt/MethodAggregator?style=flat-square" />
+    </a>
+    <a href="https://github.com/chr0mcom/MethodAggregator/actions/workflows/dotnet.yml" alt="Pipeline status">
+        <img src="https://img.shields.io/github/actions/workflow/status/chr0mcom/MethodAggregator/dotnet.yml?branch=main&style=flat-square" />
+    </a>
+    <a href="https://github.com/chr0mcom/MethodAggregator/blob/main/LICENSE" alt="License">
+        <img alt="GitHub" src="https://img.shields.io/github/license/chr0mcom/MethodAggregator?style=flat-square">
+    </a>
+</p>
+
 MethodAggregator is a C# library that allows you to manage, register, and execute methods dynamically. It provides functionality to find and execute the most suitable method based on the provided parameters and return type.
 
 ## Usage
