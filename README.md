@@ -1,16 +1,8 @@
 # MethodAggregator
 
-<p align="center">
-    <a href="https://www.nuget.org/packages/MethodAggregator" alt="Downloads">
-        <img src="https://img.shields.io/nuget/dt/MethodAggregator?style=flat-square" />
-    </a>
-    <a href="https://github.com/chr0mcom/MethodAggregator/actions/workflows/dotnet.yml" alt="Pipeline status">
-        <img src="https://img.shields.io/github/actions/workflow/status/chr0mcom/MethodAggregator/dotnet.yml?branch=main&style=flat-square" />
-    </a>
-    <a href="https://github.com/chr0mcom/MethodAggregator/blob/main/LICENSE" alt="License">
-        <img alt="GitHub" src="https://img.shields.io/github/license/chr0mcom/MethodAggregator?style=flat-square">
-    </a>
-</p>
+[![Downloads](https://img.shields.io/nuget/dt/MethodAggregator?style=flat-square)](https://www.nuget.org/packages/MethodAggregator)
+[![Pipeline status](https://img.shields.io/github/actions/workflow/status/chr0mcom/MethodAggregator/dotnet.yml?branch=main&style=flat-square)](https://github.com/chr0mcom/MethodAggregator/actions/workflows/dotnet.yml)
+[![GitHub](https://img.shields.io/github/license/chr0mcom/MethodAggregator?style=flat-square)](https://github.com/chr0mcom/MethodAggregator/blob/main/LICENSE)
 
 | ![Logo](https://raw.githubusercontent.com/chr0mcom/MethodAggregator/main/gfx/logo_200.png) | MethodAggregator is a C# library that allows you to manage, register, and execute methods dynamically. It provides functionality to find and execute the most suitable method based on the provided parameters and return type. |
 | ---------- | ------- | 
