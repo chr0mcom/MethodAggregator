@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 #pragma warning disable CS8321
 
 namespace MethodAggregator.Example
@@ -10,10 +12,9 @@ namespace MethodAggregator.Example
         {
             IMethodAggregator aggregator = new MethodAggregator();
 
-            //Example1(aggregator);
-            //Example2(aggregator);
+            Example1(aggregator);
+            Example2(aggregator);
             Example3(aggregator);
-
 
             Console.ReadLine();
         }
@@ -60,8 +61,28 @@ namespace MethodAggregator.Example
             aggregator.SimpleExecute(instance2); 
         }
 
-        //Call by best match search with return parameter
+        //Use in a plug-in architecture
         private static void Example3(IMethodAggregator aggregator)
+        {
+            List<IPlugin> plugins = new List<IPlugin> { new PluginA(), new PluginB() };
+
+            foreach (IPlugin plugin in plugins)
+            {
+                plugin.RegisterMethods(aggregator);
+            }
+
+            string input = "Hello, world!";
+            string upper = aggregator.Execute<string>("ToUpper", input);
+            string reversed = aggregator.Execute<string>("Reverse", input);
+
+            Console.WriteLine($"Input: {input}");
+            Console.WriteLine($"ToUpper: {upper}");
+            Console.WriteLine($"Reverse: {reversed}");
+        }
+
+        //TODO: Not working yet!
+        //Call by best match search with return parameter
+        private static void Example4(IMethodAggregator aggregator)
         {
             MyClass1 Func1() => new () {Foo = "Func1 was called."};
             IMyInterface1 Func2() => new MyClass1 {Foo = "Func2 was called."};
