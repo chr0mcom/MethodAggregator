@@ -56,7 +56,7 @@ public class Program
 
         // Register methods
         aggregator.Register((int x, int y) => x + y, "Add");
-        aggregator.Register((int x, double y) => x * y, "Multiply");
+        aggregator.Register((int x, double y) => (int)(x * y), "Multiply");
 
         // Examples for SimpleExecute
         int sumResult = aggregator.SimpleExecute<int>(10, 20); // Invokes the Add method
