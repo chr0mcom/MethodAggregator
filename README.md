@@ -12,7 +12,8 @@
     </a>
 </p>
 
-MethodAggregator is a C# library that allows you to manage, register, and execute methods dynamically. It provides functionality to find and execute the most suitable method based on the provided parameters and return type.
+| ![Logo](https://raw.githubusercontent.com/chr0mcom/MethodAggregator/main/gfx/logo_200.png) | MethodAggregator is a C# library that allows you to manage, register, and execute methods dynamically. It provides functionality to find and execute the most suitable method based on the provided parameters and return type. |
+| ---------- | ------- | 
 
 ## Usage
 
