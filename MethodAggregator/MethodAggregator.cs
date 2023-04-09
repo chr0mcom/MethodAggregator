@@ -118,38 +118,26 @@ public class MethodAggregator : IMethodAggregator
 		GC.SuppressFinalize(this);
 	}
 
-	[NotNull]
-	private List<Delegate> FilterCountOfParameterMatches(string name, Type returnType, ICollection parameterTypes) => (returnType == typeof(void) ? GetMethods(name)?.Where(d => d != null && parameterTypes != null && d.Method.ReturnType == returnType && d.Method.GetParameters().Length == parameterTypes.Count).ToList() : GetMethods(name)?.Where(d => d != null && parameterTypes != null && d.Method.GetParameters().Length == parameterTypes.Count).ToList()) ?? new List<Delegate>();
-
-	private static Delegate FilterParameterBestTypeMatches([NotNull] List<Delegate> delegates, [NotNull] Type returnType, [NotNull] IReadOnlyList<Type> parameterTypes)
+	private Delegate FindDelegate(string name, [NotNull] Type returnType, [NotNull] IEnumerable<object> parameters)
 	{
-		if (delegates == null) throw new ArgumentNullException(nameof(delegates));
-		if (returnType == null) throw new ArgumentNullException(nameof(returnType));
-		if (returnType == null) throw new ArgumentNullException(nameof(returnType));
-		if (parameterTypes == null) throw new ArgumentNullException(nameof(parameterTypes));
-		if (parameterTypes == null) throw new ArgumentNullException(nameof(parameterTypes));
-		int parameterTypesCount = parameterTypes.Count;
-		for (int i = 0; i < parameterTypesCount; i++)
-		{
-			List<Type> parameterToCheck = delegates.ToList().Where(del => del != null).Select(del => del.Method.GetParameters()[i].ParameterType).ToList();
-			Type parameterType = parameterTypes[i];
-			if (parameterType == null) throw new ArgumentNullException(nameof(parameterType));
-			Type priorityType = TypeConversion.IsNativeType(parameterType) ? TypeConversion.GetBestNativeTypeMatch(parameterType, parameterToCheck) : TypeConversion.GetHighestInheritedType(parameterType, parameterToCheck);
-			delegates = delegates.Where(d => d != null && d.Method.GetParameters()[i].ParameterType == priorityType).ToList();
-		}
-
-		List<Type> returnTypesToCheck = delegates.Where(d => d != null).Select(d => d.Method.ReturnType).ToList();
-		Type highestPriorityType = TypeConversion.IsNativeType(returnType) ? TypeConversion.GetBestNativeTypeMatch(returnType, returnTypesToCheck) : TypeConversion.GetHighestInheritedType(returnType, returnTypesToCheck);
-		return delegates.FirstOrDefault(d => d != null && d.Method.ReturnType == highestPriorityType);
+		List<Type> parameterTypes = parameters.Where(o => o != null).Select(o => o.GetType()).ToList();
+		List<Delegate> filterCountOfParameterMatches = FilterCountOfParameterMatches(name, returnType, parameterTypes);
+		List<Delegate> filterParameterTypesAreAssignable = FilterParameterTypesAreAssignable(filterCountOfParameterMatches, returnType, parameterTypes);
+		return FilterParameterBestTypeMatches(filterParameterTypesAreAssignable, returnType, parameterTypes);
 	}
 
+	private IEnumerable<Delegate> GetMethods(string name = null) => name == null ? _registeredMethods.Keys : _registeredMethods.Where(p => p.Value.name == name).Select(p => p.Key);
+
+	[NotNull]
+	private List<Delegate> FilterCountOfParameterMatches(string name, Type returnType, ICollection parameterTypes) => (returnType == typeof(void) ? GetMethods(name)?.Where(d => d != null && parameterTypes != null && d.Method.ReturnType == returnType && d.Method.GetParameters().Length == parameterTypes.Count).ToList() : GetMethods(name)?.Where(d => d != null && parameterTypes != null && d.Method.GetParameters().Length == parameterTypes.Count).ToList()) ?? new List<Delegate>();
+	
 	[NotNull]
 	private static List<Delegate> FilterParameterTypesAreAssignable([NotNull] List<Delegate> delegates, [NotNull] Type returnType, [NotNull] IReadOnlyList<Type> parameterTypes)
 	{
 		if (delegates == null) throw new ArgumentNullException(nameof(delegates));
 		if (returnType == null) throw new ArgumentNullException(nameof(returnType));
 		if (parameterTypes == null) throw new ArgumentNullException(nameof(parameterTypes));
-		List<Delegate> filteredList = new List<Delegate>();
+		List<Delegate> filteredList = new ();
 		foreach (Delegate del in delegates)
 		{
 			if (del == null) continue;
@@ -161,14 +149,24 @@ public class MethodAggregator : IMethodAggregator
 
 		return filteredList;
 	}
+	
+    private static Delegate FilterParameterBestTypeMatches([NotNull] List<Delegate> delegates, [NotNull] Type returnType, [NotNull] IReadOnlyList<Type> parameterTypes)
+    {
+        if (delegates == null) throw new ArgumentNullException(nameof(delegates));
+        if (returnType == null) throw new ArgumentNullException(nameof(returnType));
+        if (parameterTypes == null) throw new ArgumentNullException(nameof(parameterTypes));
+        int parameterTypesCount = parameterTypes.Count;
+        for (int i = 0; i < parameterTypesCount; i++)
+        {
+            List<Type> parameterToCheck = delegates.ToList().Where(del => del != null).Select(del => del.Method.GetParameters()[i].ParameterType).ToList();
+            Type parameterType = parameterTypes[i];
+            if (parameterType == null) throw new ArgumentNullException(nameof(parameterType));
+            Type priorityType = TypeConversion.IsNativeType(parameterType) ? TypeConversion.GetBestNativeTypeMatch(parameterType, parameterToCheck) : TypeConversion.GetHighestInheritedType(parameterType, parameterToCheck);
+            delegates = delegates.Where(d => d != null && d.Method.GetParameters()[i].ParameterType == priorityType).ToList();
+        }
 
-	private Delegate FindDelegate(string name, [NotNull] Type returnType, [NotNull] IEnumerable<object> parameters)
-	{
-		List<Type> parameterTypes = parameters.Where(o => o != null).Select(o => o.GetType()).ToList();
-		List<Delegate> filterCountOfParameterMatches = FilterCountOfParameterMatches(name, returnType, parameterTypes);
-		List<Delegate> filterParameterTypesAreAssignable = FilterParameterTypesAreAssignable(filterCountOfParameterMatches, returnType, parameterTypes);
-		return FilterParameterBestTypeMatches(filterParameterTypesAreAssignable, returnType, parameterTypes);
-	}
-
-	private IEnumerable<Delegate> GetMethods(string name = null) => name == null ? _registeredMethods.Keys : _registeredMethods.Where(p => p.Value.name == name).Select(p => p.Key);
+        List<Type> returnTypesToCheck = delegates.Where(d => d != null).Select(d => d.Method.ReturnType).ToList();
+        Type highestPriorityType = TypeConversion.IsNativeType(returnType) ? TypeConversion.GetBestNativeTypeMatch(returnType, returnTypesToCheck) : TypeConversion.GetHighestInheritedType(returnType, returnTypesToCheck);
+        return delegates.FirstOrDefault(d => d != null && d.Method.ReturnType == highestPriorityType);
+    }
 }

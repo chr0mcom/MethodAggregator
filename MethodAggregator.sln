@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MethodAggregator", "MethodAggregator\MethodAggregator.csproj", "{CB66A7BE-045F-4F12-BF8C-62EC0E98420D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MethodAggregator", "MethodAggregator\MethodAggregator.csproj", "{CB66A7BE-045F-4F12-BF8C-62EC0E98420D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MethodAggregator.Tests", "MethodAggregator.Tests\MethodAggregator.Tests.csproj", "{DEDC95BE-5E5B-4850-ADD2-26EDCEA54FE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MethodAggregator.Tests", "MethodAggregator.Tests\MethodAggregator.Tests.csproj", "{DEDC95BE-5E5B-4850-ADD2-26EDCEA54FE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MethodAggregator.Example", "MethodAggregator.Example\MethodAggregator.Example.csproj", "{5BC710EA-9341-4BC9-ABD9-4EEAFD0F2AD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{DEDC95BE-5E5B-4850-ADD2-26EDCEA54FE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEDC95BE-5E5B-4850-ADD2-26EDCEA54FE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEDC95BE-5E5B-4850-ADD2-26EDCEA54FE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BC710EA-9341-4BC9-ABD9-4EEAFD0F2AD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BC710EA-9341-4BC9-ABD9-4EEAFD0F2AD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BC710EA-9341-4BC9-ABD9-4EEAFD0F2AD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BC710EA-9341-4BC9-ABD9-4EEAFD0F2AD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

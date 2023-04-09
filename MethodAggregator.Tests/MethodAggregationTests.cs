@@ -12,13 +12,12 @@ namespace MethodAggregator.Tests;
 
 public class MethodAggregationUnitTests : MethodAggregatorTestBase
 {
+    [NotNull] private readonly ITestOutputHelper _output;
 	public MethodAggregationUnitTests([NotNull] ITestOutputHelper output)
 	{
 		_output = output;
 		MethodAggregator = new MethodAggregator();
 	}
-
-	[NotNull] private readonly ITestOutputHelper _output;
 
 	[Fact]
 	public void Execute_ExecuteRegisteredMethod_MethodIsExecuted()
