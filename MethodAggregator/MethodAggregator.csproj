@@ -11,6 +11,7 @@
     <PackageId>MethodAggregator</PackageId>
     <Version>1.0.3</Version>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <PackageIcon>gfx/logo.ico</PackageIcon>
     <FileVersion>1.0.3.0</FileVersion>
     <InformationalVersion>1.0.3</InformationalVersion>
     <Authors>
@@ -25,5 +26,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="gfx/logo.ico" Pack="true" PackagePath=""/>
   </ItemGroup>
 </Project>
