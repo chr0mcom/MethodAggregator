@@ -11,16 +11,16 @@
     <PackageId>MethodAggregator</PackageId>
     <Version>1.0.3</Version>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <PackageIcon>gfx/logo.ico</PackageIcon>
+    <PackageIcon>logo_200.png</PackageIcon>
     <FileVersion>1.0.3.0</FileVersion>
     <InformationalVersion>1.0.3</InformationalVersion>
     <Authors>
-            chr0mcom,
-            lukasschachner
-        </Authors>
+        chr0mcom,
+        lukasschachner
+    </Authors>
     <PackageDescription>
-            This library provides a way to register methods and execute them later.
-        </PackageDescription>
+        This library provides a way to register methods and execute them later.
+    </PackageDescription>
     <LangVersion>10</LangVersion>
 
   </PropertyGroup>
@@ -29,6 +29,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Include="gfx/logo.ico" Pack="true" PackagePath=""/>
+    <None Include="../gfx/logo_200.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 </Project>
