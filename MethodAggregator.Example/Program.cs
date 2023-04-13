@@ -15,6 +15,7 @@ namespace MethodAggregator.Example
             Example1(aggregator);
             Example2(aggregator);
             Example3(aggregator);
+            Example4(aggregator);
 
             Console.ReadLine();
         }
@@ -49,7 +50,8 @@ namespace MethodAggregator.Example
             void Action3(MyClass2 obj) => Console.WriteLine("Method3 with MyClass2 was called.");
             void Action4(IMyInterface2 obj) => Console.WriteLine("Method4 with IMyInterface2 was called.");
             
-            //aggregator.Register(Action1);
+            //Try by commenting out with the following registrations
+            aggregator.Register(Action1);
             aggregator.Register(Action2);
             aggregator.Register(Action3);
             aggregator.Register(Action4);
@@ -60,9 +62,30 @@ namespace MethodAggregator.Example
             aggregator.SimpleExecute(instance1); 
             aggregator.SimpleExecute(instance2); 
         }
+        
+        //Call by best match search with return parameter
+        private static void Example3(IMethodAggregator aggregator)
+        {
+            MyClass1 Func1(string foo) => new () {Foo = $"{nameof(Func1)} was called for {foo}"};
+            IMyInterface1 Func2(string foo) => new MyClass1 {Foo = $"{nameof(Func2)} was called for {foo}"};
+            MyClass2 Func3(string foo) => new () {Foo = $"{nameof(Func3)} was called for {foo}"};
+            IMyInterface2 Func4(string foo) => new MyClass2 {Foo = $"{nameof(Func4)} was called for {foo}"};
+            
+            //Try by commenting out with the following registrations
+            aggregator.Register(Func1);
+            aggregator.Register(Func2);
+            aggregator.Register(Func3);
+            aggregator.Register(Func4);
+            
+            IMyInterface1 instance1 = aggregator.SimpleExecute<IMyInterface1>("IMyInterface1");
+            IMyInterface2 instance2 = aggregator.SimpleExecute<IMyInterface2>("IMyInterface2");
+
+            Console.WriteLine(instance1.Foo);
+            Console.WriteLine(instance2.Foo);
+        }
 
         //Use in a plug-in architecture
-        private static void Example3(IMethodAggregator aggregator)
+        private static void Example4(IMethodAggregator aggregator)
         {
             List<IPlugin> plugins = new List<IPlugin> { new PluginA(), new PluginB() };
 
@@ -78,27 +101,6 @@ namespace MethodAggregator.Example
             Console.WriteLine($"Input: {input}");
             Console.WriteLine($"ToUpper: {upper}");
             Console.WriteLine($"Reverse: {reversed}");
-        }
-
-        //TODO: Not working yet!
-        //Call by best match search with return parameter
-        private static void Example4(IMethodAggregator aggregator)
-        {
-            MyClass1 Func1() => new () {Foo = "Func1 was called."};
-            IMyInterface1 Func2() => new MyClass1 {Foo = "Func2 was called."};
-            MyClass2 Func3() => new () {Foo = "Func3 was called."};
-            IMyInterface2 Func4() => new MyClass2 {Foo = "Func4 was called."};
-            
-            aggregator.Register(Func1);
-            //aggregator.Register(Func2);
-            aggregator.Register(Func3);
-            aggregator.Register(Func4);
-            
-            IMyInterface1 instance1 = aggregator.SimpleExecute<IMyInterface1>();
-            IMyInterface2 instance2 = aggregator.SimpleExecute<IMyInterface2>();
-
-            Console.WriteLine(instance1.Foo);
-            Console.WriteLine(instance2.Foo);
         }
     }
 }

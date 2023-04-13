@@ -162,11 +162,13 @@ public class MethodAggregator : IMethodAggregator
             Type parameterType = parameterTypes[i];
             if (parameterType == null) throw new ArgumentNullException(nameof(parameterType));
             Type priorityType = TypeConversion.IsNativeType(parameterType) ? TypeConversion.GetBestNativeTypeMatch(parameterType, parameterToCheck) : TypeConversion.GetHighestInheritedType(parameterType, parameterToCheck);
+            if (priorityType == null) continue;
             delegates = delegates.Where(d => d != null && d.Method.GetParameters()[i].ParameterType == priorityType).ToList();
         }
 
         List<Type> returnTypesToCheck = delegates.Where(d => d != null).Select(d => d.Method.ReturnType).ToList();
-        Type highestPriorityType = TypeConversion.IsNativeType(returnType) ? TypeConversion.GetBestNativeTypeMatch(returnType, returnTypesToCheck) : TypeConversion.GetHighestInheritedType(returnType, returnTypesToCheck);
+        Type highestPriorityType = TypeConversion.IsNativeType(returnType) ? TypeConversion.GetBestNativeTypeMatch(returnType, returnTypesToCheck) : TypeConversion.GetHighestInheritedTypeInverted(returnType, returnTypesToCheck);
+        if (highestPriorityType == null) return null;
         return delegates.FirstOrDefault(d => d != null && d.Method.ReturnType == highestPriorityType);
     }
 }
