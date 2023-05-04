@@ -134,7 +134,7 @@ interface IMyInterface2
 } 
 ```
 
-*Listing 6: Sample code for testing the behavior
+*Listing 6: Sample code for testing the behavior*
 
 ```csharp
 void Action1(MyClass1 obj) => Console.WriteLine("Method1 with MyClass1 was called.");
@@ -171,7 +171,7 @@ aggregator.SimpleExecute(new MyClass2());
 
 Suppose you have an application with a plugin architecture. Plugins can provide their own methods that can be called by the main application. In this case, the MethodAggregator can be used to manage and call methods from different plugins.
 
-*Listing 7: Interface for the plugins
+*Listing 7: Interface for the plugins*
 
 ```csharp
 public interface IPlugin
@@ -181,7 +181,7 @@ public interface IPlugin
 }
 ```
 
-*Listing 8: The two plugins implementing their useful functions
+*Listing 8: The two plugins implementing their useful functions*
 
 ```csharp
 public class PluginA : IPlugin
@@ -213,7 +213,7 @@ public class PluginB : IPlugin
 }
 ```
 
-*Listing 9: Registering the methods of the plugins in the main application and calling them
+*Listing 9: Registering the methods of the plugins in the main application and calling them*
 
 ```csharp
 List<IPlugin> plugins = new List<IPlugin> { new PluginA(), new PluginB() };
