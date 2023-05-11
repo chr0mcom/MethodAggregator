@@ -2,6 +2,7 @@ assembly-versioning-scheme: MajorMinorPatch
 assembly-file-versioning-scheme: MajorMinorPatchTag
 assembly-informational-format: '{LegacySemVer}'
 mode: ContinuousDeployment
+continuous-delivery-fallback-tag: ''
 legacy-semver-padding: 0
 build-metadata-padding: 0
 commits-since-version-source-padding: 0

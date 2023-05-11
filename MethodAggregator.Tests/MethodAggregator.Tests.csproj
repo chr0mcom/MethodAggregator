@@ -27,4 +27,5 @@
     <ItemGroup>
         <ProjectReference Include="..\MethodAggregator\MethodAggregator.csproj" />
     </ItemGroup>
+    
 </Project>

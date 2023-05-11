@@ -35,19 +35,38 @@ internal class TypeConversion
 		return bestMatch;
 	}
 
+    private static (Type methodType, TypeNode assignableType) GetHighestInheritedTypeNodePair([NotNull] Type callerType, [NotNull] IEnumerable<Type> methodTypes)
+    {
+        if (callerType == null) throw new ArgumentNullException(nameof(callerType));
+        if (methodTypes == null) throw new ArgumentNullException(nameof(methodTypes));
+        if (!TypeNodeDictionary.TryGetValue(callerType, out TypeNode buildTypeNode))
+        {
+            buildTypeNode = BuildTypeTree(callerType);
+            TypeNodeDictionary.TryAdd(callerType, buildTypeNode);
+        }
+
+        if (buildTypeNode == null) throw new ArgumentNullException(nameof(buildTypeNode));
+        IEnumerable<(Type methodType, TypeNode assignableType)> assignableTypes = GetAssignableTypes(buildTypeNode, methodTypes.ToList());
+        return assignableTypes.OrderBy(t => t.assignableType.Level).ThenBy(t => t.assignableType.Order).FirstOrDefault();
+    }
+
+    public static Type GetHighestInheritedTypeInverted([NotNull] Type callerType, [NotNull] IEnumerable<Type> methodTypes)
+    {
+        List<(Type methodType, TypeNode assignableType)> assignableTypes = new ();
+        Type[] invertedMethodTypes = { callerType };
+        foreach (Type methodType in methodTypes)
+        {
+            assignableTypes.Add((methodType, GetHighestInheritedTypeNodePair(methodType, invertedMethodTypes).assignableType));
+        }
+
+        return assignableTypes.OrderBy(t => t.assignableType.Level).ThenBy(t => t.assignableType.Order).FirstOrDefault().methodType;
+    }
+
 	public static Type GetHighestInheritedType([NotNull] Type callerType, [NotNull] IEnumerable<Type> methodTypes)
 	{
 		if (callerType == null) throw new ArgumentNullException(nameof(callerType));
 		if (methodTypes == null) throw new ArgumentNullException(nameof(methodTypes));
-		if (!TypeNodeDictionary.TryGetValue(callerType, out TypeNode buildTypeNode))
-		{
-			buildTypeNode = BuildTypeTree(callerType);
-			TypeNodeDictionary.TryAdd(callerType, buildTypeNode);
-		}
-
-		if (buildTypeNode == null) throw new ArgumentNullException(nameof(buildTypeNode));
-		IEnumerable<(Type methodType, TypeNode assignableType)> assignableTypes = GetAssignableTypes(buildTypeNode, methodTypes.ToList());
-		return assignableTypes.OrderBy(t => t.assignableType.Level).ThenBy(t => t.assignableType.Order).Select(t => t.methodType).FirstOrDefault() ?? throw new InvalidOperationException("Could not find Type for method parameter");
+		return GetHighestInheritedTypeNodePair(callerType, methodTypes).methodType;
 	}
 
 	public static bool IsAssignableOrConvertibleTo([NotNull] Type fromType, [NotNull] Type toType)
@@ -502,7 +521,7 @@ internal class TypeConversion
 
 	private static bool IsUnsignedIntegerType(Type type) => type == typeof(byte) || type == typeof(ushort) || type == typeof(uint) || type == typeof(ulong);
 
-	private class TypeNode
+    internal class TypeNode
 	{
 		public Type Type { get; set; }
 		public List<TypeNode> Children { get; } = new();
