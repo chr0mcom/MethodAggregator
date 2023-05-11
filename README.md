@@ -51,7 +51,7 @@ public int Multiply(int a, double b)
 *Snippet 2: Registering methods*
 
 ```csharp
-IMethodAggregator aggregator = new MethodAggregator(); 
+IMethodAggregator aggregator = new MethodAggregator(RegisteringBehaviour.MethodName); 
 aggregator.Register(Add); 
 aggregator.Register(Multiply); 
 ```
@@ -177,14 +177,14 @@ public class PluginB : IPlugin
 
 ```csharp
 List<IPlugin> plugins = new List<IPlugin> { new PluginA(), new PluginB() };
-IMethodAggregator aggregator = new MethodAggregator();
+IMethodAggregator aggregator = new MethodAggregator(RegisteringBehaviour.ClassAndMethodName);
 foreach (IPlugin plugin in plugins)
 {
     plugin.RegisterMethods(aggregator);
 }
 string input = "Hello, world!";
-string upper = aggregator.Execute<string>("ToUpper", input);
-string reversed = aggregator.Execute<string>("Reverse", input);
+string upper = aggregator.Execute<string>("PluginA.ToUpper", input);
+string reversed = aggregator.Execute<string>("PluginB.Reverse", input);
 Console.WriteLine($"Input: {input}");
 Console.WriteLine($"ToUpper: {upper}");
 Console.WriteLine($"Reverse: {reversed}");
@@ -205,7 +205,8 @@ The MethodAggregator class provides the following methods for managing and execu
 - `TryExecute<T>(out T returnValue, string name, params object[] parameters)`: Attempts to execute the method with the specified name and parameters, returning a value of type T, and returns a boolean indicating whether the operation succeeded
 - `TryExecute(string name, params object[] parameters)`: Attempts to execute the method with the specified name and parameters, without returning a value, and returns a boolean indicating whether the operation succeeded
 - `IsRegistered(Delegate del)`: Returns a boolean indicating whether the specified delegate is registered in the aggregator
-- `Register(Delegate del, string name = null)`: Registers the specified delegate with the given name, or the delegate's method name by default
+- `Register(Delegate del, string name = null)`: Registers the specified delegate with the in the constructor specified RegisteringBehaviour or the custom given name
+- `Register(Delegate del, RegisteringBehavoiur registeringBehaviour, string name = null)`: Registers the specified delegate with the given name adhering to the specified registering behaviour
 - `Unregister(Delegate del)`: Unregisters the specified delegate from the aggregator
 - `Dispose()`: Releases all resources used by the MethodAggregator instance
 
