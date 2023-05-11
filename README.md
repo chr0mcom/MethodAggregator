@@ -10,24 +10,16 @@
 
 The idea of the **MethodAggregator** emerged to simplify access to and invocation of methods from different components in complex applications. In modern software development, there is a constant effort to find efficient and elegant solutions that make the code more readable, maintainable, and flexible. The MethodAggregator contributes to handling a wide range of use cases and scenarios while improving the efficiency and structure of the development process.
 
-## The Challenge
-In complex applications and interactions between multiple components, organizing method calls and dependencies can be challenging. An *IoC container* can help, but if the instantiation or registration order is not optimal, undesirable side effects may occur. If instances are required in a constructor but have not yet been registered in the IoC container, this leads to an error during execution, which is sometimes difficult to recognize. Passing the IoC container into the respective class to obtain the required instance at the time of application is one way to circumvent this problem but feels like bad code design.
+In complex applications and interactions between multiple components, organizing method calls and dependencies can be challenging. Modularity and reusability are crucial for avoiding redundancy and maintainability issues. Event handling or messaging systems enable communication between components but are often not ideal and can appear cumbersome when direct method calls are desired.
 
-Modularity and reusability are crucial for avoiding redundancy and maintainability issues. Event handling or messaging systems enable communication between components but are often not ideal and can appear cumbersome when direct method calls are desired.
+The **MethodAggregator**, provides an alternative to an IoC container in certain cases by focusing on organizing and invoking methods rather than managing classes and interfaces. The advantage of the MethodAggregator lies in the targeted organization and handling of methods in selected use cases, the optimization of the application structure and logic, and thus the improvement of code quality.
 
-The **MethodAggregator**, therefore, provides a better alternative in certain cases by focusing on organizing and invoking methods rather than managing classes and interfaces. While an IoC container is still required for basic dependency management, the MethodAggregator can minimize dependencies between components in specific scenarios and simplify access to methods from different parts of the application without having to consider complex dependencies or special IoC configurations. The advantage of the MethodAggregator lies in its targeted organization and handling of methods in selected use cases, optimizing application structure and logic, and thus improving code quality.
+## Registration
 
-## Method Registration
-The MethodAggregator uses a central registration structure in which methods are stored and managed based on a registration name and its parameters. The registration mechanism provides the necessary information for the call.
+The MethodAggregator operates as a centralized structure that manages methods using a registration name and parameters, simplifying method invocation via reflection, hence eliminating concerns about instantiation or order of component registration. Its core functionality includes the `Register` method, allowing delegate instances registration optionally with a provided name, or by default using the method name when the overload without a name is applied. Post-registration, these methods can be invoked through different `Execute` methods.
 
-One of the core functionalities of the MethodAggregator is to simplify the invocation of registered methods using reflection. You can call the desired methods by passing the appropriate parameters without worrying about instantiation or the order of component registration.
-
-The MethodAggregator includes the `Register` method, which is used to register delegate instances. Optionally, a registration name for the method can be provided. If the overload without a name is used, the method name is simply used for registration. After registration, these methods can be called using one of the various `Execute` methods.
-
-## Simple Execution
-Let's start with the regular `Execute` method. First, it checks if a match is achieved through the registration parameter. If there are multiple registrations with the same name, the MethodAggregator looks for the method with the same or a corresponding return type that can be converted to the requested type.
-
-The same applies to the method parameters passed to `Execute`. The `SimpleExecute` call works basically the same way, except it does not pre-filter by registration name but simply searches the complete list of methods for a suitable delegate based on return and input parameters. This greatly simplifies the use of the MethodAggregator, especially when the number of registered methods is low, and we want to access a method as simply as possible.
+## Execution
+The `Execute` method in MethodAggregator first checks for a match via the registration parameter and, when multiple registrations have the same name, it identifies a method with an equivalent or convertible return type. This applies to method parameters passed to `Execute` as well. The `SimpleExecute` call, however, does not pre-filter by registration name; instead, it scans the entire method list for an appropriate delegate based on return and input parameters, streamlining the use of the MethodAggregator, particularly when the number of registered methods is low, and straightforward access to a method is desired.
 
 But how does the search for the right method work in detail? For this, the implementation in the `FindDelegate` method uses three helper methods called in succession.
 
@@ -35,22 +27,14 @@ But how does the search for the right method work in detail? For this, the imple
 - `FilterParameterTypesAreAssignable`
 - `FilterParameterBestTypeMatches`
 
-The `FilterCountOfParameterMatches` method filters the methods in the first step, which have the same number of parameters as the provided parameters.
-
-In the next step, the `FilterParameterTypesAreAssignable` method filters the methods whose parameter and return types are assignable or convertible to the specified types.
-
-Finally, the `FilterParameterBestTypeMatches` method filters the methods whose parameter and return types have the highest degree of match with the specified types. Depending on the type, two categories are considered. For native types, the most logical or sensible type is chosen, while for classes and interfaces, inheritance and implementation levels must be traversed. The most obvious match receives the highest degree of match. Developing this priority logic for classes and interfaces was a major challenge. To find the "most obvious" match, a tree structure of inherited classes and implemented interfaces is created during the search. This structure is cached and only needs to be created on the first call of the `FindDelegate` method.
-
-If there is still more than one method left after these three filters, the system can no longer distinguish and simply takes the first entry. If you have such a situation, you must use the registration name when calling to ensure the execution of the correct method.
-
-In addition, thread safety in a multithreading context is ensured by always creating a separate lock object when registering a method. This is then used when calling the method, preventing simultaneous execution.
+The method `FilterCountOfParameterMatches` initially filters methods that share the same number of parameters as the provided ones. This is followed by `FilterParameterTypesAreAssignable`, which filters based on parameter and return types being assignable or convertible to specific types. The final filtration is performed by `FilterParameterBestTypeMatches`, selecting methods with the highest degree of match with the designated types, considering both native types and classes or interfaces. For the latter, a tree structure of inheritance and implementation levels is created, cached, and used for finding the "most obvious" match. If multiple methods remain post filtration, the first one is chosen; if specificity is required, method registration names should be used. Concurrent execution is prevented through the use of separate lock objects created during method registration, ensuring thread safety in a multithreading context.
 
 The following are various application examples for the `MethodAggregator` to better illustrate its functionality and versatility.
 
 **Application Example 1: Registering Methods and Calling**
 Suppose you have an application that should perform various mathematical operations.
 
-*Listing 1: Methods for performing addition and multiplication*
+*Snippet 1: Methods for performing addition and multiplication*
 
 ```csharp
 public int Add(int a, int b) 
@@ -64,7 +48,7 @@ public int Multiply(int a, double b)
 } 
 ```
 
-*Listing 2: Registering methods*
+*Snippet 2: Registering methods*
 
 ```csharp
 IMethodAggregator aggregator = new MethodAggregator(); 
@@ -72,14 +56,14 @@ aggregator.Register(Add);
 aggregator.Register(Multiply); 
 ```
 
-*Listing 3: Calling with registration names (by default the same as the method name)*
+*Snippet 3: Calling with registration names (by default the same as the method name)*
 
 ```csharp
 int sum = aggregator.Execute<int>("Add", 3, 5); 
 int product = aggregator.Execute<int>("Multiply", 3, 5.0); 
 ```
 
-*Listing 4: Simplified calling (when input and return parameter types are unique)*
+*Snippet 4: Simplified calling (when input and return parameter types are unique)*
 
 ```csharp
 int sum = aggregator.SimpleExecute<int>(3, 5); 
@@ -87,9 +71,9 @@ int product = aggregator.SimpleExecute<int>(3, 5.0);
 ```
 
 **Application Example 2: Using Conversion Logic**
-As mentioned, the `MethodAggregator` has complex search algorithms to find the method with the highest probability, even when the given parameter types or the requested return type do not explicitly match. The following example (see Listing 5 & 6) should illustrate this again.
+As mentioned, the `MethodAggregator` has complex search algorithms to find the method with the highest probability, even when the given parameter types or the requested return type do not explicitly match. The following example (see Snippet 5 & 6) should illustrate this again.
 
-*Listing 5: Exemplary class and interface schema*
+*Snippet 5: Exemplary class and interface schema*
 
 ```csharp
 class MyClass1 : MyClass2, IMyInterface1 
@@ -113,7 +97,7 @@ interface IMyInterface2
 } 
 ```
 
-*Listing 6: Sample code for testing the behavior*
+*Snippet 6: Sample code for testing the behavior*
 
 ```csharp
 void Action1(MyClass1 obj) => Console.WriteLine("Method1 with MyClass1 was called.");
@@ -147,7 +131,7 @@ aggregator.SimpleExecute(new MyClass2());
 **Example 3**: Use in a plugin architecture
 Suppose you have an application with a plugin architecture. Plugins can provide their own methods that can be called by the main application. In this case, the MethodAggregator can be used to manage and call methods from different plugins.
 
-*Listing 7: Interface for the plugins*
+*Snippet 7: Interface for the plugins*
 
 ```csharp
 public interface IPlugin
@@ -157,7 +141,7 @@ public interface IPlugin
 }
 ```
 
-*Listing 8: The two plugins implementing their useful functions*
+*Snippet 8: The two plugins implementing their useful functions*
 
 ```csharp
 public class PluginA : IPlugin
@@ -189,7 +173,7 @@ public class PluginB : IPlugin
 }
 ```
 
-*Listing 9: Registering the methods of the plugins in the main application and calling them*
+*Snippet 9: Registering the methods of the plugins in the main application and calling them*
 
 ```csharp
 List<IPlugin> plugins = new List<IPlugin> { new PluginA(), new PluginB() };
