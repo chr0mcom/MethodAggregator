@@ -21,7 +21,7 @@ public class MethodAggregator : IMethodAggregator
 	/// </summary>
 	/// <param name="registeringBehaviour">defines the convention for registering methods.</param>
 	/// <seealso cref="RegisteringBehaviour"/>
-	public MethodAggregator(RegisteringBehaviour registeringBehaviour = RegisteringBehaviour.MethodName) { _registeringBehaviour = registeringBehaviour; }
+	public MethodAggregator(RegisteringBehaviour registeringBehaviour = RegisteringBehaviour.ClassAndMethodName) { _registeringBehaviour = registeringBehaviour; }
 
 	/// <inheritdoc />
 	public T Execute<T>(string name, [NotNull] params object[] parameters)
@@ -99,7 +99,15 @@ public class MethodAggregator : IMethodAggregator
 	public void Register(Delegate del, string name = null)
 	{
 		if (del == null) throw new ArgumentNullException(nameof(del));
-		name ??= _registeringBehaviour switch
+		Register(del, _registeringBehaviour, name);
+	}
+	
+	
+	/// <inheritdoc />
+	public void Register(Delegate del, RegisteringBehaviour registeringBehaviour, string name = null)
+	{
+		if (del == null) throw new ArgumentNullException(nameof(del));
+		name ??= registeringBehaviour switch
 		{
 				RegisteringBehaviour.MethodName => del.Method.Name,
 				RegisteringBehaviour.ClassAndMethodName => $"{del.Method.DeclaringType?.Name}.{del.Method.Name}",
@@ -107,6 +115,7 @@ public class MethodAggregator : IMethodAggregator
 		};
 		_registeredMethods.Add(del, (name, new object()));
 	}
+	
 
 	/// <inheritdoc />
 	public void Unregister(Delegate del)

@@ -14,11 +14,6 @@ public class MethodAggregatorClassNameTests : MethodAggregatorTestBase
 	[Fact]
 	public void Register_RegisterWithNamingConvention_MethodIsRegisteredWithClassName()
 	{
-		#region Arrange
-
-		Class1 class1 = new ();
-
-		#endregion Arrange
 
 		#region Act
 		
@@ -27,6 +22,7 @@ public class MethodAggregatorClassNameTests : MethodAggregatorTestBase
 		#endregion Act
 
 		#region Assert
+		
 		MethodAggregator.IsRegistered("Class1.Method1").ShouldBeTrue();
 		MethodAggregator.IsRegistered("Method1").ShouldBeFalse();
 
