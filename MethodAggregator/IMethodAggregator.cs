@@ -50,6 +50,7 @@ public interface IMethodAggregator : IDisposable
 
 	/// <summary>
 	///     Registers a method.
+	///		Adheres to the normal convention of registering methods with the on construction specified Registering method.
 	/// </summary>
 	/// <example>
 	///     <code>
@@ -58,9 +59,20 @@ public interface IMethodAggregator : IDisposable
 	/// 	methodAggregator.Register(Add);
 	/// </code>
 	/// </example>
+	/// 
 	/// <param name="del">The <see cref="Delegate" /> to be registered</param>
 	/// <param name="name">the name to later call the method by</param>
 	void Register([NotNull] Delegate del, string name = null);
+
+	
+	/// <summary>
+	///    Registers a method.
+	///		Use this overload when the method to be registered should adhere a different RegisteringBehaviour than the one specified on construction.
+	/// </summary>
+	/// <param name="del">The <see cref="Delegate" /> to be registered</param>
+	/// <param name="registeringBehaviour"><see cref="RegisteringBehaviour"/></param>
+	/// <param name="name">the name to later call the method by</param>
+	void Register(Delegate del, RegisteringBehaviour registeringBehaviour, string name = null);
 
 	/// <summary>
 	///     Finds the best fitting method by return type and parameters, and executes it.
@@ -103,9 +115,9 @@ public interface IMethodAggregator : IDisposable
 	void Unregister([NotNull] Delegate del);
 
 	/// <summary>
-	///    Unregisters a method by name.
+	///     Unregisters a method by name.
 	/// </summary>
-	/// <seealso cref="Unregister(System.Delegate)"/>
+	/// <seealso cref="Unregister(System.Delegate)" />
 	/// <param name="name"></param>
 	void Unregister([NotNull] string name);
 }

@@ -12,11 +12,19 @@ namespace MethodAggregator.Tests;
 
 public class MethodAggregationUnitTests : MethodAggregatorTestBase
 {
-    [NotNull] private readonly ITestOutputHelper _output;
-	public MethodAggregationUnitTests([NotNull] ITestOutputHelper output)
+	public MethodAggregationUnitTests([NotNull] ITestOutputHelper output) : base(RegisteringBehaviour.MethodName)
 	{
 		_output = output;
 		MethodAggregator = new MethodAggregator();
+	}
+
+	[NotNull] private readonly ITestOutputHelper _output;
+
+	[Fact]
+	public void Execute_CalledWithNonRegisteredName_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<InvalidOperationException>(() => MethodAggregator.Execute<int>("NotRegistered")).Message.ShouldBe("No method found for given parameters.");
 	}
 
 	[Fact]
@@ -86,6 +94,27 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		returned.ShouldBe(2);
 
 		#endregion Assert
+	}
+
+	[Fact]
+	public void IsRegistered_CalledWithNullDelegate_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<ArgumentNullException>(() => MethodAggregator.IsRegistered((Delegate) null)).Message.ShouldBe("Value cannot be null. (Parameter 'del')");
+	}
+
+	[Fact]
+	public void IsRegistered_CalledWithNullName_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<ArgumentNullException>(() => MethodAggregator.IsRegistered((string) null)).Message.ShouldBe("Value cannot be null. (Parameter 'name')");
+	}
+
+	[Fact]
+	public void Register_CalledWithNullDelegate_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<ArgumentNullException>(() => MethodAggregator.Register(null)).Message.ShouldBe("Value cannot be null. (Parameter 'del')");
 	}
 
 	[Fact]
@@ -327,6 +356,27 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 	}
 
 	[Fact]
+	public void Unregister_CalledWithNonRegisteredName_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<InvalidOperationException>(() => MethodAggregator.Unregister("NotRegistered")).Message.ShouldBe("No method found with given name: 'NotRegistered'.");
+	}
+
+	[Fact]
+	public void Unregister_CalledWithNullDelegate_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<ArgumentNullException>(() => MethodAggregator.Unregister((Delegate) null)).Message.ShouldBe("Value cannot be null. (Parameter 'del')");
+	}
+
+	[Fact]
+	public void Unregister_CalledWithNullName_ExceptionIsThrown()
+	{
+		// ReSharper disable once AssignNullToNotNullAttribute
+		Should.Throw<ArgumentNullException>(() => MethodAggregator.Unregister((string) null)).Message.ShouldBe("Value cannot be null. (Parameter 'name')");
+	}
+
+	[Fact]
 	public void Unregister_RegisterAndUnregisterMethod_MethodIsUnregistered()
 	{
 		#region Arrange
@@ -349,7 +399,7 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 
 		#endregion Assert
 	}
-	
+
 	[Fact]
 	public void Unregister_RegisterAndUnregisterMethodByName_MethodIsUnregistered()
 	{
@@ -372,53 +422,5 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		MethodAggregator.IsRegistered(nameof(MethodToExecute)).ShouldBe(false);
 
 		#endregion Assert
-	}
-	
-	[Fact]
-	public void IsRegistered_CalledWithNullName_ExceptionIsThrown()
-	{
-		// ReSharper disable once AssignNullToNotNullAttribute
-		Should.Throw<ArgumentNullException>(() => MethodAggregator.IsRegistered((string)null)).Message.ShouldBe("Value cannot be null. (Parameter 'name')");
-	}
-	
-	[Fact]
-	public void IsRegistered_CalledWithNullDelegate_ExceptionIsThrown()
-	{
-		// ReSharper disable once AssignNullToNotNullAttribute
-		Should.Throw<ArgumentNullException>(() => MethodAggregator.IsRegistered((Delegate)null)).Message.ShouldBe("Value cannot be null. (Parameter 'del')");
-	}
-	
-	[Fact]
-	public void Register_CalledWithNullDelegate_ExceptionIsThrown()
-	{
-		// ReSharper disable once AssignNullToNotNullAttribute
-		Should.Throw<ArgumentNullException>(() => MethodAggregator.Register(null)).Message.ShouldBe("Value cannot be null. (Parameter 'del')");
-	}
-	
-	[Fact]
-	public void Unregister_CalledWithNullDelegate_ExceptionIsThrown()
-	{
-		// ReSharper disable once AssignNullToNotNullAttribute
-		Should.Throw<ArgumentNullException>(() => MethodAggregator.Unregister((Delegate)null)).Message.ShouldBe("Value cannot be null. (Parameter 'del')");
-	}
-	[Fact]
-	public void Unregister_CalledWithNullName_ExceptionIsThrown()
-	{
-		// ReSharper disable once AssignNullToNotNullAttribute
-		Should.Throw<ArgumentNullException>(() => MethodAggregator.Unregister((string)null)).Message.ShouldBe("Value cannot be null. (Parameter 'name')");
-	}
-	
-	[Fact]
-	public void Unregister_CalledWithNonRegisteredName_ExceptionIsThrown()
-	{
-		// ReSharper disable once AssignNullToNotNullAttribute
-		Should.Throw<InvalidOperationException>(() => MethodAggregator.Unregister("NotRegistered")).Message.ShouldBe("No method found with given name: 'NotRegistered'.");
-	}
-	
-	[Fact]
-	public void Execute_CalledWithNonRegisteredName_ExceptionIsThrown()
-	{
-		// ReSharper disable once AssignNullToNotNullAttribute
-		Should.Throw<InvalidOperationException>(() => MethodAggregator.Execute<int>("NotRegistered")).Message.ShouldBe("No method found for given parameters.");
 	}
 }
