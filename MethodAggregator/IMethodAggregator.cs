@@ -64,7 +64,67 @@ public interface IMethodAggregator : IDisposable
 	/// <param name="name">the name to later call the method by</param>
 	void Register([NotNull] Delegate del, string name = null);
 
-	
+    /// <summary>
+    /// Registers the methods of a specified class for later execution. If an instance is provided,
+    /// it will register the instance methods. If omitted, a new instance of type T is created and its methods are registered.
+    /// </summary>
+    /// <typeparam name="T">The class type containing the methods to be registered.</typeparam>
+    /// <param name="instance">The instance of the class. If omitted, a new instance is created and its methods are registered.</param>
+    /// <remarks>
+    /// Use this method to dynamically register methods from a class. Once registered,
+    /// these methods can be executed on-demand using their names and parameters via
+    /// the <see cref="Execute{T}(string, object[])" /> method. Instances that are created are managed and 
+    /// will be disposed of, if they implement IDisposable, when their methods are unregistered.
+    /// </remarks>
+    void RegisterClass<T>(T instance = null) where T : class;
+    
+    /// <summary>
+    /// Registers all static methods of the specified type. 
+    /// The methods within the specified type can then be executed based on their names and parameters.
+    /// </summary>
+    /// <typeparam name="T">The type of the class whose static methods will be registered.</typeparam>
+    /// <param name="registeringBehaviour">The behavior with which the methods should be registered.</param>
+    /// <remarks>
+    /// Use this method when you wish to register static methods of a class and 
+    /// might want to specify a different registering behaviour than the default one set during construction.
+    /// </remarks>
+    void RegisterClass<T>(RegisteringBehaviour registeringBehaviour) where T : class;
+
+    /// <summary>
+    /// Registers all methods of the provided instance of the specified type. If the instance is not provided,
+    /// a new instance of type T is created and its methods are registered.
+    /// </summary>
+    /// <typeparam name="T">The type of the class whose methods will be registered.</typeparam>
+    /// <param name="instance">The instance of the class. If omitted, a new instance is created.</param>
+    /// <param name="registeringBehaviour">The behavior with which the methods should be registered.</param>
+    /// <remarks>
+    /// Use this method to register methods of a class instance. Instances that are created are managed and 
+    /// will be disposed of, if they implement IDisposable, when their methods are unregistered.
+    /// </remarks>
+    void RegisterClass<T>(T instance, RegisteringBehaviour registeringBehaviour) where T : class;
+
+    /// <summary>
+    /// Registers all static methods of the specified class type. 
+    /// The methods within the class type can then be executed based on their names and parameters.
+    /// </summary>
+    /// <param name="classType">The type of the class whose static methods will be registered.</param>
+    /// <remarks>
+    /// Use this method to register static methods of a class without the need to specify generic type parameters.
+    /// </remarks>
+    void RegisterClass(Type classType);
+
+    /// <summary>
+    /// Registers all static methods of the specified class type with the provided registering behaviour.
+    /// The methods within the class type can then be executed based on their names and parameters.
+    /// </summary>
+    /// <param name="classType">The type of the class whose static methods will be registered.</param>
+    /// <param name="registeringBehaviour">The behavior with which the methods should be registered.</param>
+    /// <remarks>
+    /// Use this method when you wish to register static methods of a class using a specific registering behaviour 
+    /// and without the need to specify generic type parameters.
+    /// </remarks>
+    void RegisterClass(Type classType, RegisteringBehaviour registeringBehaviour);
+
 	/// <summary>
 	///    Registers a method.
 	///		Use this overload when the method to be registered should adhere a different RegisteringBehaviour than the one specified on construction.

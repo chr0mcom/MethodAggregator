@@ -50,6 +50,52 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		#endregion Assert
 	}
 
+    [Fact]
+    public void Execute_ExecuteRegisterClassMethod_MethodIsExecuted()
+    {
+        #region Arrange
+
+        string testString = nameof(testString);
+        MethodAggregator.RegisterClass<ClassForRegisterClassTest>(RegisteringBehaviour.MethodName);
+
+        #endregion
+
+        #region Act
+
+        string returned = MethodAggregator.Execute<string>(nameof(ClassForRegisterClassTest.TestMethod2), testString);
+
+        #endregion Act
+
+        #region Assert
+
+        returned.ShouldBe(testString);
+
+        #endregion Assert
+    }
+
+    [Fact]
+    public void Execute_ExecuteRegisterClassStaticMethod_StaticMethodIsExecuted()
+    {
+        #region Arrange
+
+        int testInt = 2;
+        MethodAggregator.RegisterClass<ClassForRegisterClassTest>(RegisteringBehaviour.MethodName);
+
+        #endregion
+
+        #region Act
+
+        int returned = MethodAggregator.Execute<int>(nameof(ClassForRegisterClassTest.StaticTestMethod1), testInt);
+
+        #endregion Act
+
+        #region Assert
+
+        returned.ShouldBe(testInt);
+
+        #endregion Assert
+    }
+
 	[Fact]
 	public void Execute_ExecuteRegisteredMethodWithParameters_MethodIsExecuted()
 	{
@@ -117,6 +163,31 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 		Should.Throw<ArgumentNullException>(() => MethodAggregator.Register(null)).Message.ShouldBe("Value cannot be null. (Parameter 'del')");
 	}
 
+    [Fact]
+    public void Register_RegisterClass_MethodsInClassAreRegistered()
+    {
+        #region Arrange
+
+        
+
+        #endregion
+
+        #region Act
+
+		MethodAggregator.RegisterClass<ClassForRegisterClassTest>(RegisteringBehaviour.MethodName);
+        
+        #endregion Act
+
+        #region Assert
+
+        MethodAggregator.IsRegistered(nameof(ClassForRegisterClassTest.TestMethod1)).ShouldBeTrue();
+        MethodAggregator.IsRegistered(nameof(ClassForRegisterClassTest.TestMethod2)).ShouldBeTrue();
+        MethodAggregator.IsRegistered(nameof(ClassForRegisterClassTest.TestMethod3)).ShouldBeTrue();
+        MethodAggregator.IsRegistered(nameof(ClassForRegisterClassTest.StaticTestMethod1)).ShouldBeTrue();
+
+        #endregion Assert
+    }
+
 	[Fact]
 	public void Register_RegisterMethod_MethodIsRegistered()
 	{
@@ -134,7 +205,7 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 
 		#region Assert
 
-		MethodAggregator.IsRegistered(WriteMethod).ShouldBe(true);
+		MethodAggregator.IsRegistered(WriteMethod).ShouldBeTrue();
 
 		#endregion Assert
 	}
@@ -178,8 +249,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 
 		#region Assert
 
-		MethodAggregator.IsRegistered(WriteMethod).ShouldBe(true);
-		MethodAggregator.IsRegistered("WriteMethod").ShouldBe(true);
+		MethodAggregator.IsRegistered(WriteMethod).ShouldBeTrue();
+		MethodAggregator.IsRegistered("WriteMethod").ShouldBeTrue();
 
 		#endregion Assert
 	}
@@ -394,8 +465,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 
 		#region Assert
 
-		MethodAggregator.IsRegistered(MethodToExecute).ShouldBe(false);
-		MethodAggregator.IsRegistered(nameof(MethodToExecute)).ShouldBe(false);
+		MethodAggregator.IsRegistered(MethodToExecute).ShouldBeFalse();
+		MethodAggregator.IsRegistered(nameof(MethodToExecute)).ShouldBeFalse();
 
 		#endregion Assert
 	}
@@ -418,8 +489,8 @@ public class MethodAggregationUnitTests : MethodAggregatorTestBase
 
 		#region Assert
 
-		MethodAggregator.IsRegistered(MethodToExecute).ShouldBe(false);
-		MethodAggregator.IsRegistered(nameof(MethodToExecute)).ShouldBe(false);
+		MethodAggregator.IsRegistered(MethodToExecute).ShouldBeFalse();
+		MethodAggregator.IsRegistered(nameof(MethodToExecute)).ShouldBeFalse();
 
 		#endregion Assert
 	}
