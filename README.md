@@ -195,6 +195,63 @@ Console.WriteLine($"Reverse: {reversed}");
 
 These examples demonstrate how the MethodAggregator can be used to register, manage, and call methods in various scenarios. By using the MethodAggregator, you can make your applications more modular and maintainable while benefiting from a simple and flexible way of calling functions.
 
+## `RegisterClass` Methods
+
+The `IMethodAggregator` interface has been extended with four new `RegisterClass` methods. These methods are designed to provide more versatility when registering methods from a specified class, whether they are instance or static methods.
+
+### Features:
+
+1. **Dynamic Method Registration**: Dynamically register methods from a specified class without explicitly defining each one.
+2. **Automatic Instance Management**: If an instance of the class isn't provided during registration, the system will automatically create and manage it. These instances are also tracked and properly disposed of, if they implement the `IDisposable` interface, upon unregistering the related methods.
+3. **Flexible Registration Behavior**: Choose your preferred registration behavior with the `RegisteringBehaviour` parameter.
+
+### Method Overviews:
+
+1. **Generic Type with Optional Instance**:
+    ```csharp
+    void RegisterClass<T>(T instance = null) where T : class;
+    ```
+    Use this method when you wish to register methods from a class, specifying either an instance or the static methods.
+
+2. **Generic Type with Registration Behavior (MethodName or ClassAndMethodName)**:
+    ```csharp
+    void RegisterClass<T>(RegisteringBehaviour registeringBehaviour) where T : class;
+    ```
+    Register static methods from a class with the flexibility to define a specific registering behavior.
+
+3. **Generic Type with Instance and Registration Behavior (MethodName or ClassAndMethodName)**:
+    ```csharp
+    void RegisterClass<T>(T instance, RegisteringBehaviour registeringBehaviour) where T : class;
+    ```
+    Register methods from a specific instance of a class with your desired registering behavior.
+
+4. **Using Class Type**:
+    ```csharp
+    void RegisterClass(Type classType);
+    ```
+    Allows for the registration of static methods without specifying generic type parameters.
+
+5. **Using Class Type with Registration Behavior (MethodName or ClassAndMethodName)**:
+    ```csharp
+    void RegisterClass(Type classType, RegisteringBehaviour registeringBehaviour);
+    ```
+    Register static methods from a class using a specific registering behavior without specifying generic type parameters.
+
+### Usage:
+
+1. **Registering instance methods**:
+    ```csharp
+    var aggregator = new MethodAggregator();
+    MyClass obj = new MyClass();
+    aggregator.RegisterClass(obj);
+    ```
+
+2. **Registering static methods with a behavior**:
+    ```csharp
+    var aggregator = new MethodAggregator();
+    aggregator.RegisterClass<MyClass>(RegisteringBehaviour.ClassAndMethodName);
+    ```
+
 ## Methods
 The MethodAggregator class provides the following methods for managing and executing registered methods:
 
